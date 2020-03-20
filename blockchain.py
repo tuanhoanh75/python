@@ -1,8 +1,9 @@
 import hashlib
 import json
-
+from textwrap import dedent
 from time import time
 from uuid import uuid4
+from flask import Flask, jsonify, request
 
 
 class Blockchain(object):
@@ -41,7 +42,7 @@ class Blockchain(object):
         :param sender: <str> Address of the Sender
         :param recipient: <str> Address of the Recipient
         :param amount: <int> Amount
-        :return: <int> The index of the index Block that will hold this tx
+        :return: <int> The index of the Block that will hold this tx
         """
 
         self.current_transactions.append({
@@ -96,8 +97,46 @@ class Blockchain(object):
         :param last_proof: <int> Previous proof
         :param proof: <int> Current proof
         :return: <bool> True if correct, False if not
-        """
 
+        encode() Function: convert the sequence of code
+        (each character of string) into sets of bytes (Unicode).
+        Goal: efficient storage of these strings. By default it convert
+        into utf-8-encoding
+        hexdigest() Function: returns the encoded data in hexadecimal format.
+        """
         guess = f'{last_proof} {proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
+
+
+# Instantiate our Node
+app = Flask(__name__)
+
+# Generate a globally unique address for this node
+node_identifier = str(uuid4()).replace('-', '')
+
+# Instantiate the Blockchain
+blockchain = Blockchain()
+
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    return "We will mine a new Block"
+
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    return "We will add a new transaction"
+
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+
+if __name__ == 'main':
+    app.run(host='0.0.0.0', port=500)
