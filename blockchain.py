@@ -26,7 +26,7 @@ class Blockchain(object):
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'previous_hash': previous_hash or self.hash(self.chain[-1])
         }
 
         # Reset the current list of transaction
@@ -41,13 +41,13 @@ class Blockchain(object):
         :param sender: <str> Address of the Sender
         :param recipient: <str> Address of the Recipient
         :param amount: <int> Amount
-        :return: <int> The index of the Block that will hold this tx
+        :return: <int> The (next) index of the Block that will hold this tx
         """
 
         self.current_transactions.append({
             'sender': sender,
             'recipient': recipient,
-            'amount': amount,
+            'amount': amount
         })
 
         return self.last_block['index'] + 1
@@ -58,10 +58,12 @@ class Blockchain(object):
         Creates a SHA-256 hash of a block
         :param block: <dict> Block
         :return: <str>
-        """
 
-        # We must make sure that the Dictionary is Ordered, or we'll have
-        # inconsistent hashes
+        We must make sure that the Dictionary is Ordered, or we'll have
+        inconsistent hashes.
+        Precisely, the dumps(sorted_keys) will sort the key-values within
+        the Dictionary (block).
+        """
 
         # json.dumps() Function will convert python data to JSON data
         block_string = json.dumps(block, sort_keys=True).encode()
